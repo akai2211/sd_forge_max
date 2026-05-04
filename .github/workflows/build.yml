@@ -1,0 +1,98 @@
+# =============================================================================
+# GitHub Actions Workflow: Build & Push Docker Image
+# 
+# Автоматически собирает Docker-образ при push в main и загружает его
+# в GitHub Container Registry (ghcr.io)
+# =============================================================================
+
+name: Build and Push Docker Image
+
+# Когда запускать workflow
+on:
+  # При push в ветку main
+  push:
+    branches:
+      - main
+    # Только если изменились эти файлы (экономит лимиты)
+    paths:
+      - 'Dockerfile'
+      - 'provisioning/**'
+      - 'config/**'
+      - '.github/workflows/build.yml'
+  
+  # Возможность запустить вручную из вкладки Actions на GitHub
+  workflow_dispatch:
+
+# Переменные окружения для всех jobs
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    
+    # Разрешения для записи в GitHub Container Registry
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      # 1. Скачиваем код репозитория
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      # 2. Освобождаем место на runner'е (Docker-образы AI-Dock большие!)
+      - name: Free up disk space
+        run: |
+          echo "=== Disk space before cleanup ==="
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force
+          echo "=== Disk space after cleanup ==="
+          df -h
+      
+      # 3. Настраиваем Docker Buildx (для эффективной сборки)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      # 4. Логинимся в GitHub Container Registry
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      # 5. Извлекаем метаданные (теги, labels) автоматически
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+      
+      # 6. Собираем и пушим образ
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      # 7. Выводим итоговую информацию
+      - name: Image digest
+        run: |
+          echo "✅ Image built and pushed successfully!"
+          echo "📦 Tags: ${{ steps.meta.outputs.tags }}"
+          echo "🔗 Pull command: docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
