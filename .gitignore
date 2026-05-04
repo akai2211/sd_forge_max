@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Логи
+*.log
+
+# Локальные тесты
+test/
+tmp/
+*.local
+
+# Секреты (на всякий случай)
+.env
+secrets/
+*.key
+*.pem
