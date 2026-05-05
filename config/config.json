@@ -1,0 +1,56 @@
+{
+  "disabled_extensions": [
+    "sd_forge_controlllite",
+    "sd_forge_dynamic_thresholding",
+    "sd_forge_fooocus_inpaint",
+    "sd_forge_freeu",
+    "sd_forge_latent_modifier",
+    "sd_forge_multidiffusion",
+    "sd_forge_neveroom",
+    "sd_forge_perturbed_attention",
+    "sd_forge_sag",
+    "sd_forge_stylealign"
+  ],
+  "disable_all_extensions": "none",
+
+  "show_progressbar": true,
+  "live_previews_enable": true,
+  "live_preview_content": "Prompt",
+  "show_progress_every_n_steps": 5,
+  "live_preview_fast_interrupt": true,
+  "live_preview_refresh_period": 1000,
+
+  "samples_save": true,
+  "samples_format": "png",
+  "save_txt": true,
+  "save_images_before_face_restoration": false,
+  "save_images_before_highres_fix": false,
+  "grid_save": false,
+
+  "outdir_samples": "",
+  "outdir_txt2img_samples": "/workspace/stable-diffusion-webui-forge/outputs/txt2img-images",
+  "outdir_img2img_samples": "/workspace/stable-diffusion-webui-forge/outputs/img2img-images",
+  "outdir_extras_samples": "/workspace/stable-diffusion-webui-forge/outputs/extras-images",
+  "outdir_grids": "",
+  "outdir_txt2img_grids": "/workspace/stable-diffusion-webui-forge/outputs/txt2img-grids",
+  "outdir_img2img_grids": "/workspace/stable-diffusion-webui-forge/outputs/img2img-grids",
+  "outdir_save": "/workspace/stable-diffusion-webui-forge/log/images",
+
+  "quicksettings_list": [
+    "sd_model_checkpoint",
+    "sd_vae",
+    "CLIP_stop_at_last_layers"
+  ],
+
+  "sd_checkpoints_keep_in_cpu": true,
+  "sd_checkpoint_cache": 0,
+  "sd_vae_cache": 0,
+
+  "CLIP_stop_at_last_layers": 2,
+  "eta_noise_seed_delta": 31337,
+
+  "gradio_theme": "Default",
+
+  "show_warnings": false,
+  "memmon_poll_rate": 8
+}

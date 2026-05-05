@@ -20,3 +20,4 @@ tmp/
 secrets/
 *.key
 *.pem
+promt
